@@ -1,0 +1,27 @@
+# .github/workflows/deploy.yml
+name: CD
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+      # Pull Repo
+      - uses: actions/checkout@v3
+
+      # Github Secrets에서 API Key 받아온 후 .env 파일에 추가
+      - run: |
+          echo "FIREBASE_API_KEY=${{secrets.API_KEY}}" >> .env
+          echo "FIREBASE_AUTH_DOMAIN=${{secrets.DOMAIN}}" >> .env
+          echo "FIREBASE_PROJECT_ID=${{secrets.PROJECT_ID}}" >> .env
+          echo "FIREBASE_STORAGE_BUCKET=${{secrets.BUCKET}}" >> .env
+          echo "FIREBASE_MESSAGING_SENDERID=${{secrets.SENDER_ID}}" >> .env
+          echo "FIREBASE_APP_ID=${{secrets.APP_ID}}" >> .env
+          echo "FIREBASE_MEASUREMENT_ID=${{secrets.MEASUREMENT_ID}}" >> .env
+      - run: cat .env
+
+      - run: npm install
+      - run: npm run build
