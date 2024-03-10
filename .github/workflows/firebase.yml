@@ -1,21 +1,22 @@
-name: Deploy to Firebase Hosting on merge
-'on':
-  push:
-    branches:
-      - main
+name: Build and Deploy
+on: [push]
+
 jobs:
-  build_and_deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout Repo
-      uses: actions/checkout@v2
-    - name: Install Dependencies
-      run: npm ci
-    - name: Build
-      run: npm run build
-    - name: Deploy to Firebase
-      uses: w9jds/firebase-action@master
-      with:
-        args: deploy --only hosting
-      env:
-        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Replace Firebase config
+        run: |
+          sed -i "s/API_KEY/${{ secrets.API_KEY }}/g" index.html
+          sed -i "s/AUTH_DOMAIN/${{ secrets.AUTH_DOMAIN }}/g" index.html
+          sed -i "s/PROJECT_ID/${{ secrets.PROJECT_ID }}/g" index.html
+          sed -i "s/STORAGE_BUCKET/${{ secrets.STORAGE_BUCKET }}/g" index.html
+          sed -i "s/MESSAGING_SENDER_ID/${{ secrets.MESSAGING_SENDER_ID }}/g" index.html
+          sed -i "s/APP_ID/${{ secrets.APP_ID }}/g" index.html
+          sed -i "s/MEASUREMENT_ID/${{ secrets.MEASUREMENT_ID }}/g" index.html
+
+      - name: Deploy
+        # Add your deployment steps here
